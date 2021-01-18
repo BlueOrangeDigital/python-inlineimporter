@@ -157,7 +157,7 @@ class Repository(dict):
         self[name] = ModuleDefinition(name, is_package, source)
 
 
-def build_inlined(modules, packages):
+def build_inlined(modules, packages, whitelist=None):
     # type: (List[str], List[str]) -> Repository
     """Builds a `~Repository` of inlined modules and packages.
 
@@ -206,7 +206,19 @@ def build_inlined(modules, packages):
                 name = package_name
                 if not is_package:
                     name = ".".join([name, extract_module_name(module_file)])
+                    if whitelist is not None and not name in whitelist:
+                        continue
+                elif whitelist is not None:
+                    contains_whitelisted_module = False
+                    for whitelisted_module in whitelist:
+                        if name in whitelisted_module:
+                            contains_whitelisted_module = True
+                            break
+
+                    if not contains_whitelisted_module:
+                        continue
 
                 inlined.insert_module(name, get_file_source(path), is_package)
+                print(f"package_name: {package_name}, module_file: {module_file}, name: {name}")
 
     return inlined

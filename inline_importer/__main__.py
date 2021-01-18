@@ -78,6 +78,15 @@ def parse_args(name):
     )
 
     parser.add_argument(
+        "-w",
+        "--whitelist-modules",
+        help="If specified, only inline modules inluded in this list.",
+        dest="whitelist",
+        default=None,
+        nargs="*",
+    )
+
+    parser.add_argument(
         "-o", "--output-file", help="Name of the output file. Use - to output to stdout instead", required=True
     )
 
@@ -106,7 +115,7 @@ def main():
     if args.entrypoint_module:
         entrypoint = inliner.get_module_source(args.entrypoint_module)
 
-    inlined = inliner.build_inlined(modules=args.input_files, packages=args.input_packages)
+    inlined = inliner.build_inlined(modules=args.input_files, packages=args.input_packages, whitelist=args.whitelist)
 
     # Build the inlined script
     output = args.output_file
